@@ -16,8 +16,9 @@ namespace Bookstore.Authors
         public string ShortBio { set; get; }
         public Author() { }
         
-        internal Author([NotNull] string name,
-            DateTime birthDate, string shortBio)
+        internal Author(Guid id,
+            [NotNull] string name,
+            DateTime birthDate, string shortBio):base(id)
         {
             SetName(name);
             BirthDate = birthDate;
