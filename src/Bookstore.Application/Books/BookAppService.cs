@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bookstore.Permissions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,12 @@ namespace Bookstore.Books
         public BookAppService(IRepository<Book, Guid> bookRepository) : base(bookRepository)
         {
             _bookRepository = bookRepository;
+            GetPolicyName = BookstorePermissions.Book.Default;
+            GetListPolicyName = BookstorePermissions.Book.Default;
+            CreatePolicyName = BookstorePermissions.Book.Create;
+            UpdatePolicyName = BookstorePermissions.Book.Edit;
+            DeletePolicyName = BookstorePermissions.Book.Delete;
+
         }
 
     }

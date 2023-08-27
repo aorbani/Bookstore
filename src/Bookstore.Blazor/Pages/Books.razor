@@ -1,8 +1,10 @@
 ﻿@page "/books"
+@attribute [Authorize(BookstorePermissions.Book.Default)]
 @using Volo.Abp.Application.Dtos
 @using Bookstore.Books
 @using Bookstore.Localization
 @using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Authorization
 @inject IStringLocalizer<BookstoreResource> L
 @inject AbpBlazorMessageLocalizerHelper<BookstoreResource> LH
 @inherits AbpCrudPageBase<IBookAppService,
@@ -20,10 +22,15 @@
                 <h2>@L["Books"]</h2>
             </Column>
             <Column ColumnSize="ColumnSize.IsAuto">
-
-                <!--Pass AddNewButtonName Parameter-->
-                <Button Color="Color.Primary"
-                        Clicked="OpenCreateModalAsync">@L["NewBook"]</Button>
+                @if (HasCreatePermission)
+                {
+                    <!--Pass AddNewButtonName Parameter-->
+                    <Button Color="Color.Primary"
+                            Clicked="OpenCreateModalAsync">
+                        @L["NewBook"]
+                    </Button>
+                }
+                
             </Column>
         </Row>
        
@@ -45,9 +52,11 @@
                         <EntityActions TItem="BookDto" EntityActionsColumn="@EntityActionsColumn">
                             <EntityAction TItem="BookDto"
                                           Text="@L["Edit"]"
+                                          Visible="@HasUpdatePermission"
                                           Clicked="() => OpenEditModalAsync(context)" />
                             <EntityAction TItem="BookDto"
                                           Text="@L["Delete"]"
+                                          Visible="@HasDeletePermission"
                                           Clicked="() => DeleteEntityAsync(context)"
                                           ConfirmationMessage="() => GetDeleteConfirmationMessage(context)" />
                         </EntityActions>
@@ -209,5 +218,11 @@
 </Modal>
 
 @code {
+    public Books()
+    {
+        CreatePolicyName = BookstorePermissions.Book.Create;
+        UpdatePolicyName = BookstorePermissions.Book.Edit;
+        DeletePolicyName = BookstorePermissions.Book.Delete;
+    }
 
 }
