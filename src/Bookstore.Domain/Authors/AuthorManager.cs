@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,21 @@ namespace Bookstore.Authors
             }
             return new Author(GuidGenerator.Create(), name, birthDate, shortBio);
 
+        }
+        public async Task ChangeNameAsync(
+        [NotNull] Author author,
+        [NotNull] string newName)
+        {
+            Check.NotNull(author, nameof(author));
+            Check.NotNullOrWhiteSpace(newName, nameof(newName));
+
+            var existingAuthor = await _authorRepository.FindByNameAsync(newName);
+            if (existingAuthor != null && existingAuthor.Id != author.Id)
+            {
+                throw new AuthorAlreadyExistException(newName);
+            }
+
+            author.ChangeName(newName);
         }
     }
 }
