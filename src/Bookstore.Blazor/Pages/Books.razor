@@ -5,6 +5,7 @@
 @using Bookstore.Localization
 @using Microsoft.Extensions.Localization
 @using Microsoft.AspNetCore.Authorization
+@using Volo.Abp;
 @inject IStringLocalizer<BookstoreResource> L
 @inject AbpBlazorMessageLocalizerHelper<BookstoreResource> LH
 @inherits AbpCrudPageBase<IBookAppService,
@@ -67,7 +68,9 @@
                 <DataGridColumn TItem="BookDto"
                                 Field="@nameof(BookDto.Name)"
                                 Caption="@L["Name"]"></DataGridColumn>
-                
+                <DataGridColumn TItem="BookDto"
+                                Field="@nameof(BookDto.AuthorName)"
+                                Caption="@L["Author"]"></DataGridColumn>
                 <DataGridColumn TItem="BookDto"
                                 Field="@nameof(BookDto.Type)"
                                 Caption="@L["Type"]">
@@ -112,7 +115,6 @@
                 <CloseButton Clicked="CloseCreateModalAsync"></CloseButton>
             </ModalHeader>
             <ModalBody>
-
                 <!--Pass ArrayofFormComponentElements must work for both add and edit-->
                 <Validations @ref="@CreateValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
                     <Validation MessageLocalizer="@LH.Localize">
@@ -125,6 +127,17 @@
                             </TextEdit>
                         </Field>
                     </Validation>
+                    <Field>
+                        <FieldLabel>@L["Author"]</FieldLabel>
+                        <Select TValue="Guid" @bind-SelectedValue="@NewEntity.AuthorId">
+                            @foreach (var author in authorList)
+                            {
+                                <SelectItem TValue="Guid" Value="@author.Id">
+                                    @author.Name
+                                </SelectItem>
+                            }
+                        </Select>
+                    </Field>
                     <Field>
                         <FieldLabel>@L["Type"]</FieldLabel>
                         <Select TValue="BookType" @bind-SelectedValue="@NewEntity.Type">
@@ -185,6 +198,17 @@
                         </Field>
                     </Validation>
                     <Field>
+                        <FieldLabel>@L["Author"]</FieldLabel>
+                        <Select TValue="Guid" @bind-SelectedValue="@NewEntity.AuthorId">
+                            @foreach (var author in authorList)
+                            {
+                                <SelectItem TValue="Guid" Value="@author.Id">
+                                    @author.Name
+                                </SelectItem>
+                            }
+                        </Select>
+                    </Field>
+                    <Field>
                         <FieldLabel>@L["Type"]</FieldLabel>
                         <Select TValue="BookType" @bind-SelectedValue="@EditingEntity.Type">
                             @foreach (int bookTypeValue in Enum.GetValues(typeof(BookType)))
@@ -218,11 +242,27 @@
 </Modal>
 
 @code {
+    IReadOnlyList<AuthorLookupDto> authorList = Array.Empty<AuthorLookupDto>();
+
     public Books()
     {
         CreatePolicyName = BookstorePermissions.Book.Create;
         UpdatePolicyName = BookstorePermissions.Book.Edit;
         DeletePolicyName = BookstorePermissions.Book.Delete;
     }
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        authorList = (await AppService.GetAuthorLookupAsync()).Items;
+    }
+    protected override async Task OpenCreateModalAsync()
+    {
+        if (!authorList.Any())
+        {
+            throw new UserFriendlyException(message: L["AnAuthorIsRequiredForCreatingBook"]);
+        }
 
+        await base.OpenCreateModalAsync();
+        NewEntity.AuthorId = authorList.First().Id;
+    }
 }

@@ -7,6 +7,9 @@ namespace Bookstore.Books
 {
     public class CreateUpdateBookDto : ICreateUpdateDto
     {
+
+        public Guid AuthorId { get; set; }
+
         [Required]
         [StringLength(100)]
         public string Name { get; set; }

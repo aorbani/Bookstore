@@ -88,6 +88,7 @@ public class BookstoreDbContext :
                   );
             b.ConfigureByConvention();
             b.Property(x => x.Name).IsRequired().HasMaxLength(100);
+            b.HasOne<Author>().WithMany().HasForeignKey(x => x.AuthorId).IsRequired();
 
         }
           );
