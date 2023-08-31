@@ -2,6 +2,7 @@
 My practice Project following the tutorial of <a href="https://docs.abp.io/en/abp/latest/Tutorials/Part-1?UI=Blazor&DB=EF"> ABP documentation <a>
 
 UI Choice: Blazor WebAssembly
+</br>
 Database Choice: Entity Framework Core
 
 The project practices the following:
