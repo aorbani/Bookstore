@@ -69,6 +69,14 @@ public class BookstoreMenuContributor : IMenuContributor
         {
             BookMenuItem.AddItem(new ApplicationMenuItem("BookStore.Books", l["Menu:Books"], url: "/books"));
         }
+        if (await context.IsGrantedAsync(BookstorePermissions.Author.Default))
+        {
+            BookMenuItem.AddItem(new ApplicationMenuItem(
+                "BookStore.Authors",
+                l["Menu:Authors"],
+                url: "/authors"
+            ));
+        }
         //return Task.CompletedTask;
     }
 

@@ -77,7 +77,7 @@ namespace Bookstore.Authors
 
             await _authorRepository.UpdateAsync(author);
         }
-        [Authorize(BookStorePermissions.Authors.Delete)]
+        [Authorize(BookstorePermissions.Author.Delete)]
         public async Task DeleteAsync(Guid id)
         {
             await _authorRepository.DeleteAsync(id);

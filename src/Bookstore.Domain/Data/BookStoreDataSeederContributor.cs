@@ -1,4 +1,5 @@
-﻿using Bookstore.Books;
+﻿using Bookstore.Authors;
+using Bookstore.Books;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +15,14 @@ namespace Bookstore.Data
         :IDataSeedContributor,ITransientDependency
     {
         private readonly IRepository<Book, Guid> _bookRepository;
+        private readonly IAuthorRepository _authorRepository;
+        private readonly AuthorManager _authorManager;
 
-        public BookStoreDataSeederContributor(IRepository<Book, Guid> bookRepository)
+        public BookStoreDataSeederContributor(IRepository<Book, Guid> bookRepository, IAuthorRepository authorRepository, AuthorManager authorManager)
         {
             _bookRepository = bookRepository;
+            _authorRepository = authorRepository;
+             _authorManager = authorManager;
         }
         public async Task SeedAsync(DataSeedContext context)
         {
@@ -37,6 +42,23 @@ namespace Bookstore.Data
                         Type = BookType.Science,
                         PublishDate = new DateTime(1990, 10, 10)
                     }, autoSave: true);
+            }
+            if (await _authorRepository.GetCountAsync() <= 0)
+            {
+                await _authorRepository.InsertAsync(
+                    await _authorManager.CreateAsync(
+                        "Hashem AlGhaili",
+                        new DateTime(1997, 08, 17),
+                        "Great Scientist")
+                    , autoSave: true
+                );
+                await _authorRepository.InsertAsync(
+                    await _authorManager.CreateAsync(
+                        "Aseel AlOrbani",
+                        new DateTime(1997, 08, 17),
+                        "Great Engineer")
+                    , autoSave: true
+                );
             }
         }
     }
