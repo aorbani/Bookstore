@@ -16,8 +16,15 @@ The project practices the following:
   <li>Error Handling</li>
   <li>Asynchronous Programming</li>
 </ul>
-
-
+</br>
+<pr>
+  You can use the following credentials to access the functionality:
+</br>
+<strong>username </strong> : admin</br>
+<strong>password </strong> : 1q2w3E*
+</pr>
+</br>
+</br>
 The following is my personal High level steps to follow:
 <ol>
   <li>Decide on your root aggregates and your design </li>
