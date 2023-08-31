@@ -1,4 +1,5 @@
-﻿using Shouldly;
+﻿using Bookstore.Authors;
+using Shouldly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +14,11 @@ namespace Bookstore.Books
     public class BookAppService_Tests :BookstoreApplicationTestBase
     {
         private readonly IBookAppService _bookAppService;
+        private readonly IAuthorAppService _authorAppService;
         public BookAppService_Tests()
         {
             _bookAppService = GetRequiredService<IBookAppService>();
+            _authorAppService = GetRequiredService<IAuthorAppService>();
         }
         [Fact]
         public async Task Should_Get_List_Of_Books()
@@ -26,14 +29,18 @@ namespace Bookstore.Books
                 );
             //Assert
             result.TotalCount.ShouldBeGreaterThan(0);
-            result.Items.ShouldContain(b => b.Name == "1984");
+            result.Items.ShouldContain(b => b.Name == "1984" &&
+                                    b.AuthorName == "Hashem AlGhaili");
         }
         [Fact]
         public async Task Should_Create_A_Valid_Book()
         {
+            var authors = await _authorAppService.GetListAsync(new GetAuthorListDto());
+            var firstAuthor = authors.Items.First();
             var result = await _bookAppService.CreateAsync(
                 new CreateUpdateBookDto
                 {
+                    AuthorId=firstAuthor.Id,
                     Name = "New test book",
                     Price = 5f,
                     PublishDate = DateTime.Now,

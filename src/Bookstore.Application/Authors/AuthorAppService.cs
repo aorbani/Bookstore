@@ -1,4 +1,5 @@
-﻿using Bookstore.Permissions;
+﻿using Bookstore.Books;
+using Bookstore.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
@@ -82,5 +83,6 @@ namespace Bookstore.Authors
         {
             await _authorRepository.DeleteAsync(id);
         }
+        
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Bookstore.Authors;
 using Bookstore.Books;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,10 +27,30 @@ namespace Bookstore.Data
         }
         public async Task SeedAsync(DataSeedContext context)
         {
-            if (await _bookRepository.GetCountAsync() <= 0)
+            if (await _bookRepository.GetCountAsync() > 0)
             {
-                await _bookRepository.InsertAsync(
-                    new Book { Name = "1984", 
+                return;
+            }
+            
+                var hashem = await _authorRepository.InsertAsync(
+                    await _authorManager.CreateAsync(
+                        "Hashem AlGhaili",
+                        new DateTime(1997, 08, 17),
+                        "Great Scientist")
+
+                );
+                var aseel = await _authorRepository.InsertAsync(
+                    await _authorManager.CreateAsync(
+                        "Aseel AlOrbani",
+                        new DateTime(1997, 08, 17),
+                        "Great Engineer")
+
+                );
+            
+              await _bookRepository.InsertAsync(
+                    new Book { 
+                        AuthorId= hashem.Id,
+                        Name = "1984", 
                         Price = 10.5f, 
                         Type = BookType.Fantastic, 
                         PublishDate = new DateTime(1997, 8, 17) 
@@ -37,29 +58,14 @@ namespace Bookstore.Data
                 await _bookRepository.InsertAsync(
                     new Book
                     {
+                        AuthorId=aseel.Id,
                         Name = "DDD Pattern",
                         Price = 18.5f,
                         Type = BookType.Science,
                         PublishDate = new DateTime(1990, 10, 10)
                     }, autoSave: true);
-            }
-            if (await _authorRepository.GetCountAsync() <= 0)
-            {
-                await _authorRepository.InsertAsync(
-                    await _authorManager.CreateAsync(
-                        "Hashem AlGhaili",
-                        new DateTime(1997, 08, 17),
-                        "Great Scientist")
-                    , autoSave: true
-                );
-                await _authorRepository.InsertAsync(
-                    await _authorManager.CreateAsync(
-                        "Aseel AlOrbani",
-                        new DateTime(1997, 08, 17),
-                        "Great Engineer")
-                    , autoSave: true
-                );
-            }
+            
+            
         }
     }
 }
